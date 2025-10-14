@@ -1,6 +1,6 @@
 from index import app
+import time
 
-@app.route('/')
-@app.route('/recipes')
+@app.route('/api/time')
 def get_recipes():
-    pass
+    return {'time': time.time()}

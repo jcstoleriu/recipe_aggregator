@@ -1,3 +1,6 @@
+from datetime import datetime
+import click
+
 from flask import current_app, g
 import sqlite3
 
@@ -14,3 +17,28 @@ def close_db(e=None):
     db = g.pop('db', None)
     if db is not None:
         db.close()
+
+
+def init_db():
+    db = get_db()
+
+    with current_app.open_resource('schema.sql') as s:
+        db.executescript(s.read().decode('utf8'))
+
+
+@click.command('init-db')
+def init_db_command():
+    init_db()
+    click.echo('Initialized the database')
+
+
+sqlite3.register_converter(
+    "timestamp", lambda x: datetime.fromisoformat(x.decode())
+)
+
+
+def init_app(app):
+    # call when cleaning up after response
+    app.teardown_appcontext(close_db)
+    # add command that can be used with 'flask' command
+    app.cli.add_command(init_db_command)
