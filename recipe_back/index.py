@@ -8,12 +8,8 @@ app.config.from_mapping(
     DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
 )
 
-
-@app.route('/api/time')
-def get_time():
-    return {'time': time.time()}
-
-
 from db import init_app
 init_app(app)
+
+import routes, models
 
