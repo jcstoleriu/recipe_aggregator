@@ -1,15 +1,18 @@
 from flask import Flask
 import os
-import time
 
+from models import db, Recipe
+
+# Init app and database
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_mapping(
     SECRET_KEY='dev',
-    DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
 )
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///"+os.path.abspath(os.getcwd())+"\\instance\\flaskr.sqlite"
+db.init_app(app)
+with app.app_context():
+    db.create_all()
 
-from db import init_app
-init_app(app)
 
-import routes, models
+import routes
 
